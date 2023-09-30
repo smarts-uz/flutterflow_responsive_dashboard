@@ -1,5 +1,6 @@
 import '/backend/supabase/supabase.dart';
 import '/components/create_user_sheet/create_user_sheet_widget.dart';
+import '/components/edit_user_sheet/edit_user_sheet_widget.dart';
 import '/components/web_nav/web_nav_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -392,6 +393,7 @@ class _TeamPageWidgetState extends State<TeamPageWidget> {
                                                         BorderRadius.circular(
                                                             8.0),
                                                   ),
+                                                  showLoadingIndicator: false,
                                                 ),
                                             ],
                                           ),
@@ -491,7 +493,8 @@ class _TeamPageWidgetState extends State<TeamPageWidget> {
                                           ),
                                           FutureBuilder<List<UsersRdRow>>(
                                             future: UsersRdTable().queryRows(
-                                              queryFn: (q) => q,
+                                              queryFn: (q) => q.order('id',
+                                                  ascending: true),
                                             ),
                                             builder: (context, snapshot) {
                                               // Customize what your widget looks like when it's loading.
@@ -764,8 +767,29 @@ class _TeamPageWidgetState extends State<TeamPageWidget> {
                                                                                 20.0,
                                                                           ),
                                                                           onPressed:
-                                                                              () {
-                                                                            print('IconButton pressed ...');
+                                                                              () async {
+                                                                            await showModalBottomSheet(
+                                                                              isScrollControlled: true,
+                                                                              backgroundColor: Colors.transparent,
+                                                                              enableDrag: false,
+                                                                              context: context,
+                                                                              builder: (context) {
+                                                                                return GestureDetector(
+                                                                                  onTap: () => _model.unfocusNode.canRequestFocus ? FocusScope.of(context).requestFocus(_model.unfocusNode) : FocusScope.of(context).unfocus(),
+                                                                                  child: Padding(
+                                                                                    padding: MediaQuery.viewInsetsOf(context),
+                                                                                    child: EditUserSheetWidget(
+                                                                                      name: listViewUsersRdRow.name!,
+                                                                                      email: listViewUsersRdRow.email!,
+                                                                                      nextTask: listViewUsersRdRow.nextTask!,
+                                                                                      status: listViewUsersRdRow.status!,
+                                                                                      id: listViewUsersRdRow.id,
+                                                                                    ),
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                            ).then((value) =>
+                                                                                safeSetState(() {}));
                                                                           },
                                                                         ),
                                                                       ),
@@ -787,16 +811,24 @@ class _TeamPageWidgetState extends State<TeamPageWidget> {
                                                                         icon:
                                                                             Icon(
                                                                           Icons
-                                                                              .more_vert,
+                                                                              .delete_rounded,
                                                                           color:
-                                                                              FlutterFlowTheme.of(context).secondaryText,
+                                                                              FlutterFlowTheme.of(context).error,
                                                                           size:
                                                                               20.0,
                                                                         ),
+                                                                        showLoadingIndicator:
+                                                                            true,
                                                                         onPressed:
-                                                                            () {
-                                                                          print(
-                                                                              'IconButton pressed ...');
+                                                                            () async {
+                                                                          await UsersRdTable()
+                                                                              .delete(
+                                                                            matchingRows: (rows) =>
+                                                                                rows.eq(
+                                                                              'id',
+                                                                              listViewUsersRdRow.id,
+                                                                            ),
+                                                                          );
                                                                         },
                                                                       ),
                                                                   ],

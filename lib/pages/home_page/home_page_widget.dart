@@ -2319,7 +2319,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                         ),
                                                       ),
                                                     Expanded(
-                                                      flex: 4,
+                                                      flex: 3,
                                                       child: Text(
                                                         'User Information',
                                                         style:
@@ -2419,7 +2419,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                             ),
                                                           ),
                                                         Expanded(
-                                                          flex: 4,
+                                                          flex: 3,
                                                           child: Padding(
                                                             padding:
                                                                 EdgeInsetsDirectional
@@ -2701,7 +2701,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                             ),
                                                           ),
                                                         Expanded(
-                                                          flex: 4,
+                                                          flex: 3,
                                                           child: Padding(
                                                             padding:
                                                                 EdgeInsetsDirectional
@@ -2983,7 +2983,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                             ),
                                                           ),
                                                         Expanded(
-                                                          flex: 4,
+                                                          flex: 3,
                                                           child: Padding(
                                                             padding:
                                                                 EdgeInsetsDirectional

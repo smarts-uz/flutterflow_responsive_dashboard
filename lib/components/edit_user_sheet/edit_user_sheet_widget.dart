@@ -8,18 +8,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'create_user_sheet_model.dart';
-export 'create_user_sheet_model.dart';
+import 'edit_user_sheet_model.dart';
+export 'edit_user_sheet_model.dart';
 
-class CreateUserSheetWidget extends StatefulWidget {
-  const CreateUserSheetWidget({Key? key}) : super(key: key);
+class EditUserSheetWidget extends StatefulWidget {
+  const EditUserSheetWidget({
+    Key? key,
+    String? name,
+    required this.email,
+    required this.nextTask,
+    required this.status,
+    required this.id,
+  })  : this.name = name ?? '',
+        super(key: key);
+
+  final String name;
+  final String? email;
+  final DateTime? nextTask;
+  final String? status;
+  final int? id;
 
   @override
-  _CreateUserSheetWidgetState createState() => _CreateUserSheetWidgetState();
+  _EditUserSheetWidgetState createState() => _EditUserSheetWidgetState();
 }
 
-class _CreateUserSheetWidgetState extends State<CreateUserSheetWidget> {
-  late CreateUserSheetModel _model;
+class _EditUserSheetWidgetState extends State<EditUserSheetWidget> {
+  late EditUserSheetModel _model;
 
   @override
   void setState(VoidCallback callback) {
@@ -30,10 +44,10 @@ class _CreateUserSheetWidgetState extends State<CreateUserSheetWidget> {
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => CreateUserSheetModel());
+    _model = createModel(context, () => EditUserSheetModel());
 
-    _model.textController1 ??= TextEditingController();
-    _model.textController2 ??= TextEditingController();
+    _model.textController1 ??= TextEditingController(text: widget.name);
+    _model.textController2 ??= TextEditingController(text: widget.email);
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -199,8 +213,8 @@ class _CreateUserSheetWidgetState extends State<CreateUserSheetWidget> {
                     onPressed: () async {
                       final _datePickedDate = await showDatePicker(
                         context: context,
-                        initialDate: getCurrentTimestamp,
-                        firstDate: getCurrentTimestamp,
+                        initialDate: widget.nextTask!,
+                        firstDate: widget.nextTask!,
                         lastDate: DateTime(2050),
                       );
 
@@ -247,7 +261,9 @@ class _CreateUserSheetWidgetState extends State<CreateUserSheetWidget> {
                       EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 16.0),
                   child: FlutterFlowDropDown<String>(
                     controller: _model.dropDownValueController ??=
-                        FormFieldController<String>(null),
+                        FormFieldController<String>(
+                      _model.dropDownValue ??= widget.status,
+                    ),
                     options: ['Active', 'Inactive'],
                     onChanged: (val) =>
                         setState(() => _model.dropDownValue = val),
@@ -286,19 +302,22 @@ class _CreateUserSheetWidgetState extends State<CreateUserSheetWidget> {
                               !_model.formKey.currentState!.validate()) {
                             return;
                           }
-                          if (_model.dropDownValue == null) {
-                            return;
-                          }
-                          await UsersRdTable().insert({
-                            'name': _model.textController1.text,
-                            'email': _model.textController2.text,
-                            'next_task':
-                                supaSerialize<DateTime>(_model.datePicked),
-                            'status': _model.dropDownValue,
-                          });
+                          await UsersRdTable().update(
+                            data: {
+                              'name': _model.textController1.text,
+                              'email': _model.textController2.text,
+                              'next_task':
+                                  supaSerialize<DateTime>(_model.datePicked),
+                              'status': _model.dropDownValue,
+                            },
+                            matchingRows: (rows) => rows.eq(
+                              'id',
+                              widget.id,
+                            ),
+                          );
                           context.pop();
                         },
-                        text: 'Create',
+                        text: 'Update',
                         options: FFButtonOptions(
                           width: 270.0,
                           height: 50.0,
